@@ -1,0 +1,118 @@
+@extends('admin.layouts.index')
+
+@section('content')
+
+<div class="content-wrapper">
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>{{__('Users')}}</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><a href="{{route('users.create', app()->getLocale())}}" class="btn btn-primary">{{__('Create')}}</a></h3>
+              </div>
+              <div class="card-body">
+                <table id="example" class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th style="width: 2%">#</th>
+                      <th>{{__('Name')}}</th>
+                      <th>{{__('Email')}}</th>
+                      <th>{{__('Status')}}</th>
+                      <th>{{__('Role')}}</th>
+                      <th style="width: 10%;" class="text-center">{{__('Action')}}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach( $users as $user )
+                    <tr>
+                      <td>{{ $user->id }}</td>
+                      <td>{{ $user->name }}</td>
+                      <td>{{ $user->email }}</td>
+                      <td>
+                        @if(app()->getLocale() == 'en')
+                          {{ $user->status->name }}
+                        @elseif(app()->getLocale() == 'uz')
+                          {{ $user->status->name_uz }}
+                        @else
+                          {{ $user->status->name_ru }}
+                        @endif
+                      </td>
+                      <td>{{ $user->user_type->name }}</td>
+                      <td class="text-nowrap" style="display: flex; justify-content: center;">
+                        <a href="{{ route('users.edit', ['user'=>$user->id, 'language'=>app()->getLocale()]) }}" class="btn btn-success btn-rounded mr-2">
+                          <i class="fa fa-edit text-inverse"></i>
+                        </a>
+                        <a href="#" class="btn btn-primary btn-rounded" data-toggle="modal" data-target="#view_shop{{ $user->id }}" title="инфо">
+                          <i class="fa fa-info text-inverse"></i>
+                        </a>
+                      </td>
+
+                        <div class="modal fade" id="view_shop{{ $user->id }}" role="dialog">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">{{__('About user')}}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <p>{{__('Name')}}: {{ $user->name }} </p>
+                                <p>Email: {{ $user->email }}</p>
+                              </div>
+                              <div class="modal-footer">
+                                <form action="{{ route('admin.users.apply', ['user'=> $user->id, 'language'=>app()->getLocale()]) }}" method="post">
+                                  @csrf
+                                  @method('POST')
+                                  <button type="submit" class="btn btn-success" title="{{__('Active')}}">{{__('Active')}}</button>
+                                </form>
+                                <form action="{{ route('admin.users.delete', ['user' => $user->id, 'language'=>app()->getLocale()]) }}" method="post">
+                                  @csrf
+                                  @method('POST')
+                                  <button type="submit" class="btn btn-danger" title="{{__('Delete')}}">{{__('Delete')}}</button>
+                                </form>
+                                <form action="{{ route('admin.users.block', ['user' => $user->id, 'language'=>app()->getLocale()]) }}" method="post">
+                                  @csrf
+                                  @method('POST')
+                                  <button type="submit" class="btn btn-warning" title="{{__('Block')}}">{{__('Block')}}</button>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer clearfix">
+                <ul class="pagination pagination-sm m-0 float-right">
+                  {!! $users->links() !!}
+                  <!-- <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+                  <li class="page-item"><a class="page-link" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">3</a></li>
+                  <li class="page-item"><a class="page-link" href="#">&raquo;</a></li> -->
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+@endsection
