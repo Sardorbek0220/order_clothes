@@ -14,43 +14,100 @@ use App\Models\Payment;
 use Kreait\Firebase\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth as AuthUser;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class FrontController extends Controller
 {
     public function register(Request $request)
     {
-        
-        try {
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required|string|max:50|unique:users,phone',
+            'address' => 'required|string|max:1000',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
 
-            $firebase = app('firebase.auth')->getUser($request->uid);
-            $check = User::where('uid', $request->uid)->get();
-            if ($firebase->phoneNumber == $request->phone) {
-                if (!empty($check)) {
-                    return response()->json("You have been registered !!!", 200);
-                }else{
-                    $user = User::create([
-                        'uid' => $request->uid,
-                        'name' => $request->name,
-                        'address' => $request->address,
-                        'phone' => $request->phone,
-                        'user_type_id' => 5,
-                        'status_id' => 1
-                    ]);
-                    AuthUser::login($user);
-                    return response()->json(true, 200);
-                }
-                
-            }else{
-                return response()->json(false, 200);
-            }
-        
-        } catch (\Kreait\Firebase\Exception\Auth\UserNotFound $e) {
-
-            return response()->json(false, 200);
-            
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
+        $user = User::create([
+            'uid' => '',
+            'name' => $request->name ?? '',
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'password' => Hash::make($request->password),
+            'user_type_id' => 5,
+            'status_id' => 1
+        ]);
+
+        $user->update(['uid' => (string) $user->id]);
+
+        $token = $user->createToken('api')->plainTextToken;
+
+        return response()->json(['success' => true, 'data' => ['user' => $user, 'token' => $token]], 201);
     }
+
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required|string|max:50',
+            'password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $user = User::where('phone', $request->phone)->first();
+
+        if (empty($user) || empty($user->password) || !Hash::check($request->password, $user->password)) {
+            return response()->json(['success' => false, 'message' => 'Telefon raqam yoki parol noto\'g\'ri'], 401);
+        }
+
+        if ($user->status_id != 1) {
+            return response()->json(['success' => false, 'message' => 'Foydalanuvchi faol emas'], 403);
+        }
+
+        $token = $user->createToken('api')->plainTextToken;
+
+        return response()->json(['success' => true, 'data' => ['user' => $user, 'token' => $token]], 200);
+    }
+
+    // public function register(Request $request)
+    // {
+        
+    //     try {
+
+    //         $firebase = app('firebase.auth')->getUser($request->uid);
+    //         $check = User::where('uid', $request->uid)->get();
+    //         if ($firebase->phoneNumber == $request->phone) {
+    //             if (!empty($check)) {
+    //                 return response()->json("You have been registered !!!", 200);
+    //             }else{
+    //                 $user = User::create([
+    //                     'uid' => $request->uid,
+    //                     'name' => $request->name,
+    //                     'address' => $request->address,
+    //                     'phone' => $request->phone,
+    //                     'user_type_id' => 5,
+    //                     'status_id' => 1
+    //                 ]);
+    //                 AuthUser::login($user);
+    //                 return response()->json(true, 200);
+    //             }
+                
+    //         }else{
+    //             return response()->json(false, 200);
+    //         }
+        
+    //     } catch (\Kreait\Firebase\Exception\Auth\UserNotFound $e) {
+
+    //         return response()->json(false, 200);
+            
+    //     }
+
+    // }
 
     public function index()
     {

@@ -23,6 +23,7 @@ use App\Http\Controllers\API\SmsController;
 
 Route::get('/', [FrontController::class, 'index']);
 Route::post('/register', [FrontController::class, 'register']);
+Route::post('/login', [FrontController::class, 'login']);
 Route::get('/create_order', [FrontController::class, 'create_order']);
 Route::get('/orders', [FrontController::class, 'orders']);
 Route::get('/order_update', [FrontController::class, 'order_update']);
