@@ -1,4 +1,4 @@
-node_modules/
+/node_modules/
 /public/build
 /public/hot
 /public/storage
@@ -18,3 +18,4 @@ yarn-error.log
 /.vscode
 .ftp-simple/
 sftp.json
+/resources/credentials/firebase_credentials.json
