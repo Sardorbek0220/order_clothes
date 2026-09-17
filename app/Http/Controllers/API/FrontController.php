@@ -16,9 +16,21 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth as AuthUser;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class FrontController extends Controller
 {
+    private function generate_token(User $user)
+    {
+        do {
+            $token = hash('sha256', Str::random(60) . $user->id . microtime(true));
+        } while (User::where('token', $token)->exists());
+
+        $user->forceFill(['token' => $token])->save();
+
+        return $token;
+    }
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -43,7 +55,7 @@ class FrontController extends Controller
 
         $user->update(['uid' => (string) $user->id]);
 
-        $token = $user->createToken('api')->plainTextToken;
+        $token = $this->generate_token($user);
 
         return response()->json(['success' => true, 'data' => ['user' => $user, 'token' => $token]], 201);
     }
@@ -69,7 +81,7 @@ class FrontController extends Controller
             return response()->json(['success' => false, 'message' => 'Foydalanuvchi faol emas'], 403);
         }
 
-        $token = $user->createToken('api')->plainTextToken;
+        $token = $this->generate_token($user);
 
         return response()->json(['success' => true, 'data' => ['user' => $user, 'token' => $token]], 200);
     }
