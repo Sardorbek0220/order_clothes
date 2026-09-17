@@ -125,8 +125,8 @@ class FrontController extends Controller
     {
         // dd(app('firebase.auth')->getUser('kASs03VucDf6Ak8gKsEaXuedvpE3'));
         $data = [
-            'services' => Service::get(),
-            'service_categories' => Service_category::get(),
+            'services' => Service::where('status_id', '=', 1)->get(),
+            'service_categories' => Service_category::where('status_id', '=', 1)->get(),
             'order_statuses' => Order_status::get(),
         ];
         return response()->json($data, 200);
