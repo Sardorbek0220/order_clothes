@@ -47,7 +47,7 @@ class Service_categoryController extends Controller
 
         if ($request->hasFile('img')) {
             $folder = date('Y-m-d');
-            $avatar = $request->file('img')->store("images/{$folder}");
+            $avatar = $request->file('img')->store("images/{$folder}", 'public');
         }else{
             $avatar = '';
         }
@@ -105,7 +105,7 @@ class Service_categoryController extends Controller
 
         if ($request->hasFile('img')) {
             $folder = date('Y-m-d');
-            $avatar = $request->file('img')->store("images/{$folder}");
+            $avatar = $request->file('img')->store("images/{$folder}", 'public');
         }else{
             $avatar = $request->own_img;
         };
