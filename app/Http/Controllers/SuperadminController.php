@@ -16,10 +16,20 @@ class SuperadminController extends Controller
     	return view('admin.index', compact('language'));
     }
 
-    public function users($language)
+    public function users(Request $request, $language)
     {
-    	$users = User::where('user_type_id', '!=', 1)->paginate(10);
-    	return view('admin.user.index', compact('users', 'language'));
+    	$user_type_id = $request->user_type_id;
+
+    	$users = User::where('user_type_id', '!=', 1)
+    		->when($user_type_id, function ($query) use ($user_type_id) {
+    			return $query->where('user_type_id', $user_type_id);
+    		})
+    		->paginate(10)
+    		->withQueryString();
+
+    	$user_types = User_type::where('id', '!=', 1)->get();
+
+    	return view('admin.user.index', compact('users', 'user_types', 'user_type_id', 'language'));
     }
 
     public function users_create($language)

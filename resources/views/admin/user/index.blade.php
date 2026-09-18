@@ -19,7 +19,22 @@
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title"><a href="{{route('users.create', app()->getLocale())}}" class="btn btn-primary">{{__('Create')}}</a></h3>
+                <div class="d-flex flex-wrap align-items-center">
+                  <h3 class="card-title mr-3 mb-0"><a href="{{route('users.create', app()->getLocale())}}" class="btn btn-primary">{{__('Create')}}</a></h3>
+                  <form action="{{ route('users', ['language'=>app()->getLocale()]) }}" method="get" class="form-inline">
+                    <div class="form-group mr-2">
+                      <label for="user_type_id" class="mr-2">{{__('Role')}}</label>
+                      <select name="user_type_id" id="user_type_id" class="form-control">
+                        <option value="">{{__('All')}}</option>
+                        @foreach($user_types as $type)
+                          <option value="{{ $type->id }}" {{ $user_type_id == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                        @endforeach
+                      </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary mr-2">{{__('Filter')}}</button>
+                    <a href="{{ route('users', ['language'=>app()->getLocale()]) }}" class="btn btn-secondary">{{__('Reset')}}</a>
+                  </form>
+                </div>
               </div>
               <div class="card-body">
                 <table id="example" class="table table-bordered">
@@ -28,6 +43,7 @@
                       <th style="width: 2%">#</th>
                       <th>{{__('Name')}}</th>
                       <th>{{__('Email')}}</th>
+                      <th>{{__('Phone')}}</th>
                       <th>{{__('Status')}}</th>
                       <th>{{__('Role')}}</th>
                       <th style="width: 10%;" class="text-center">{{__('Action')}}</th>
@@ -39,6 +55,7 @@
                       <td>{{ $user->id }}</td>
                       <td>{{ $user->name }}</td>
                       <td>{{ $user->email }}</td>
+                      <td>{{ $user->phone }}</td>
                       <td>
                         @if(app()->getLocale() == 'en')
                           {{ $user->status->name }}
