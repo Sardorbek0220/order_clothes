@@ -54,8 +54,8 @@
                     <tr>
                       <td>{{ $user->id }}</td>
                       <td>{{ $user->name }}</td>
-                      <td>{{ $user->email }}</td>
-                      <td>{{ $user->phone }}</td>
+                      <td>{{ $user->email ?: '-' }}</td>
+                      <td>{{ $user->phone ?: '-' }}</td>
                       <td>
                         @if(app()->getLocale() == 'en')
                           {{ $user->status->name }}
@@ -67,9 +67,15 @@
                       </td>
                       <td>{{ $user->user_type->name }}</td>
                       <td class="text-nowrap" style="display: flex; justify-content: center;">
+                        @if($user->user_type_id == 5)
+                        <span class="btn btn-success btn-rounded mr-2 disabled" title="{{__('Customer data cannot be edited')}}">
+                          <i class="fa fa-edit text-inverse"></i>
+                        </span>
+                        @else
                         <a href="{{ route('users.edit', ['user'=>$user->id, 'language'=>app()->getLocale()]) }}" class="btn btn-success btn-rounded mr-2">
                           <i class="fa fa-edit text-inverse"></i>
                         </a>
+                        @endif
                         <a href="#" class="btn btn-primary btn-rounded" data-toggle="modal" data-target="#view_shop{{ $user->id }}" title="инфо">
                           <i class="fa fa-info text-inverse"></i>
                         </a>
@@ -86,7 +92,10 @@
                               </div>
                               <div class="modal-body">
                                 <p>{{__('Name')}}: {{ $user->name }} </p>
-                                <p>Email: {{ $user->email }}</p>
+                                <p>Email: {{ $user->email ?: '-' }}</p>
+                                <p>{{__('Phone')}}: {{ $user->phone ?: '-' }}</p>
+                                <p>{{__('Address')}}: {{ $user->address ?: '-' }}</p>
+                                <p>{{__('Role')}}: {{ $user->user_type->name }}</p>
                               </div>
                               <div class="modal-footer">
                                 <form action="{{ route('admin.users.apply', ['user'=> $user->id, 'language'=>app()->getLocale()]) }}" method="post">

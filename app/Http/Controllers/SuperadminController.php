@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 
 class SuperadminController extends Controller
 {
+    const CUSTOMER_TYPE_ID = 5;
+
     public function index($language)
     {
     	return view('admin.index', compact('language'));
@@ -61,20 +63,30 @@ class SuperadminController extends Controller
 	public function users_edit($language, $id)
     {
     	$user = User::find($id);
-    	$user_types = User_type::get();
+
+    	if (empty($user) || $user->user_type_id == self::CUSTOMER_TYPE_ID) {
+    		return redirect()->route('users', app()->getLocale());
+    	}
+
+    	$user_types = User_type::where('id', '!=', self::CUSTOMER_TYPE_ID)->get();
     	return view('admin.user.edit', compact('user', 'user_types', 'language'));
     }
 
     public function users_update(Request $request, $language)
 	{
+	    $user = User::find($request->user);
+
+	    if (empty($user) || $user->user_type_id == self::CUSTOMER_TYPE_ID) {
+	      return redirect()->route('users', app()->getLocale());
+	    }
+
 	    $request->validate([
-	      'user_type_id' => 'required',
+	      'user_type_id' => 'required|not_in:' . self::CUSTOMER_TYPE_ID,
 	      'name'=>'required',
 	      'email'=>'required|email',
 	      'password'=>'required|confirmed',
 	    ]);
-	    $user = User::find($request->user);
-        // dd($user);
+
 	    $user->update([
 	      'name' => $request->name,
 	      'email' => $request->email,
