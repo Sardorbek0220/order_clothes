@@ -57,5 +57,10 @@
 	"FIO": "FIO",
 	"Old password": "Eski parol",
 	"New password": "Yangi parol",
-	"Password confirmation": "Parolni tasdiqlash"
+	"Password confirmation": "Parolni tasdiqlash",
+	"Date": "Sana",
+	"From": "Dan",
+	"To": "Gacha",
+	"Filter": "Filtrlash",
+	"Reset": "Tozalash"
 }

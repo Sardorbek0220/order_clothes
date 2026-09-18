@@ -17,10 +17,21 @@ class Order_moderatorController extends Controller
     	return view('order_moderator.index', compact('language'));
     }
 
-    public function orders($language)
+    public function orders(Request $request, $language)
     {
-    	$orders = Order::orderBy('created_at', 'DESC')->get();
-    	return view('order_moderator.orders', compact('orders', 'language'));
+    	$date_from = $request->date_from;
+    	$date_to = $request->date_to;
+
+    	$orders = Order::when($date_from, function ($query) use ($date_from) {
+    			return $query->whereDate('created_at', '>=', $date_from);
+    		})
+    		->when($date_to, function ($query) use ($date_to) {
+    			return $query->whereDate('created_at', '<=', $date_to);
+    		})
+    		->orderBy('created_at', 'DESC')
+    		->get();
+
+    	return view('order_moderator.orders', compact('orders', 'language', 'date_from', 'date_to'));
     }
 
     public function order_detail($language, $id)

@@ -17,10 +17,24 @@ class CourierController extends Controller
     	return view('courier.index', compact('language'));
     }
 
-    public function points($language)
+    public function points(Request $request, $language)
     {
-    	$orders = Order::where('order_status_id', 4)->orWhere('updated_by', auth()->user()->id)->get();
-    	return view('courier.points', compact('orders', 'language'));
+    	$date_from = $request->date_from;
+    	$date_to = $request->date_to;
+
+    	$orders = Order::where(function ($query) {
+    			$query->where('order_status_id', 4)
+    				->orWhere('updated_by', auth()->user()->id);
+    		})
+    		->when($date_from, function ($query) use ($date_from) {
+    			return $query->whereDate('created_at', '>=', $date_from);
+    		})
+    		->when($date_to, function ($query) use ($date_to) {
+    			return $query->whereDate('created_at', '<=', $date_to);
+    		})
+    		->get();
+
+    	return view('courier.points', compact('orders', 'language', 'date_from', 'date_to'));
     }
 
     public function delivered(Request $request, $language)

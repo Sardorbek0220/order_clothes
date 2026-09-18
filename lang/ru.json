@@ -57,5 +57,10 @@
 	"FIO": "ФИО",
 	"Old password": "Старый пароль",
 	"New password": "Новый пароль",
-	"Password confirmation": "Повторите пароль"
+	"Password confirmation": "Повторите пароль",
+	"Date": "Дата",
+	"From": "С",
+	"To": "По",
+	"Filter": "Фильтр",
+	"Reset": "Сбросить"
 }

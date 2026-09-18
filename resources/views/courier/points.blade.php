@@ -18,6 +18,20 @@
         <div class="row">
           <div class="col-md-12">
             <div class="card">
+              <div class="card-header">
+                <form action="{{ route('courier.points', ['language'=>app()->getLocale()]) }}" method="get" class="form-inline">
+                  <div class="form-group mr-2">
+                    <label for="date_from" class="mr-2">{{__('From')}}</label>
+                    <input type="date" name="date_from" id="date_from" class="form-control" value="{{ $date_from }}">
+                  </div>
+                  <div class="form-group mr-2">
+                    <label for="date_to" class="mr-2">{{__('To')}}</label>
+                    <input type="date" name="date_to" id="date_to" class="form-control" value="{{ $date_to }}">
+                  </div>
+                  <button type="submit" class="btn btn-primary mr-2">{{__('Filter')}}</button>
+                  <a href="{{ route('courier.points', ['language'=>app()->getLocale()]) }}" class="btn btn-secondary">{{__('Reset')}}</a>
+                </form>
+              </div>
               <div class="card-body">
                 <table id="example" class="table table-bordered table-striped">
                   <thead>
@@ -28,6 +42,7 @@
                       <th>{{__('Address')}}</th>
                       <th>{{__('Phone')}}</th>
                       <th>{{__('Status')}}</th>
+                      <th>{{__('Date')}}</th>
                       <th style="width: 10%;" class="text-center">{{__('Action')}}</th>
                     </tr>
                   </thead>
@@ -49,6 +64,7 @@
                         @endif
                         
                       </td>
+                      <td>{{ $order->created_at ? $order->created_at->format('d.m.Y H:i') : '' }}</td>
                       <td class="text-nowrap" style="display: flex; justify-content: center;">
                         <a href="#" class="btn btn-primary btn-rounded" data-toggle="modal" data-target="#view_shop{{ $order->id }}" title="инфо">
                           <i class="fa fa-info text-inverse"></i>
